@@ -19,7 +19,7 @@ def Solution_2(data):
             actual_lose = 0
             simulation_lose = 0
             current_fib_index = 0
-        if actual_lose > 5:
+        if actual_lose > 6:
             current_streak = False
             simulation_lose = 0
             current_fib_index = 0
@@ -33,7 +33,7 @@ def Solution_2(data):
                 actual_lose += bet * 0.8
                 actual_integral += bet * 0.8
                 actual_bet_list.append(bet)
-            current_fib_index -= 2  # 回退1
+            current_fib_index -= 1  # 回退1
             if current_fib_index < 0:
                 current_fib_index = 0
         else:  # Incorrect guess
@@ -85,19 +85,19 @@ def Solution_3(data):
             actual_lose = 0
             simulation_lose = 0
             current_fib_index = 0
-            actual_times[0] = [True, 0, 0]
+            actual_times = [True, 0, 0]
         if actual_lose > 5:
             current_streak = False
             simulation_lose = 0
             current_fib_index = 0
             actual_lose = 0
-            actual_times[0] = [False, 0, 0]
+            actual_times = [False, 0, 0]
         if (actual_times[0] == True) & (actual_times[1] >= 10) & (actual_times[2] > 0):
             current_streak = False
             simulation_lose = 0
             current_fib_index = 0
             actual_lose = 0
-            actual_times[0] = [False, 0, 0]
+            actual_times = [False, 0, 0]
         current_fib = fib_sequence[current_fib_index]
         bet = current_fib * 2
         if num >= 5:  # Correct guess
@@ -132,7 +132,7 @@ def Solution_3(data):
 
 # 示例数据，包含数值
 # 模拟减少积分大于20后，斐波那契归1后开始实际运行，实际积分大于10后。重新开始上述操作。
-data = get_data()['number_one'].tolist()
-final_integral = Solution_3(data)
-print(f"Solution_3最后的数量为: {final_integral}")
+# data = get_data()['number_one'].tolist()
+# final_integral = Solution_3(data)
+# print(f"Solution_3最后的数量为: {final_integral}")
 

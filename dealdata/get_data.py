@@ -8,11 +8,11 @@ def get_data():
 
     # SELECT * FROM base_data WHERE `type` = 2  and insert_time > '2025-02-17' order by id
     # 查询数据
-    query = "SELECT * FROM base_data WHERE `type` = 2   order by id"
+    query = "SELECT * FROM base_data WHERE `type` = 2 and insert_time > '2025-02-25' order by id"
     df = pd.read_sql(query, engine)
 
     # 将number_one到number_five列转换为数值类型
-    for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_five']:
+    for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_five', 'total']:
         df[col] = pd.to_numeric(df[col], errors='coerce')  # 无法转换的会变成NaN
 
     return df
