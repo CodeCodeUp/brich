@@ -39,12 +39,12 @@ def calculate_consecutive_big_small(df, columns, min_consecutive_count=5, max_co
 
                     if count_big > max_consecutive_count:
                         big_seqs_over_7 += 1
-                        if col == 'number_one':
-                            print(str(i) + '(>7)')
+                        # if col == 'number_one':
+                        #     print(str(i) + '(>7)')
                     else:
                         big_seqs_5_to_7 += 1
-                        if col == 'number_one':
-                            print(str(i) + '(' + str(count_big) + ')')
+                        # if col == 'number_one':
+                        #     print(str(i) + '(' + str(count_big) + ')')
                 count_big = 0
 
             # 处理小

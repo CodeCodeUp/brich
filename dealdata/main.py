@@ -4,6 +4,7 @@ from strategy_big_small import calculate_big_small_statistics
 from strategy_consecutive import calculate_consecutive_big_small
 from statistics_odd_even import calculate_odd_even
 from statistics_odd_even_consecutive import calculate_consecutive_odd_even
+from statistics_big_small_continue import analyze_data
 
 
 def main():
@@ -21,6 +22,7 @@ def main():
     # 统计连续单/双超过4次的次数，连续单双超过4次且不超过7次的次数，连续单双7次的次数
     calculate_consecutive_data = calculate_consecutive_odd_even(df,['number_one', 'number_two', 'number_three',
                                                                     'number_four', 'number_five'])
+
 
     # 打印结果
     print('大小概率')
@@ -51,6 +53,11 @@ def main():
     # 计算概率并打印结果
     probability_calculator.print_probability()
     print()
+
+    print('# 统计总的连续情况')
+    for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_five']:
+        data = analyze_data(df[col].tolist())
+        print(f"{col}:{data}")
 
 
 if __name__ == '__main__':
