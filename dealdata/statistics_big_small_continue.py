@@ -26,7 +26,7 @@ def analyze_data(data):
     })
 
     # 筛选出长度≥5的段
-    valid_segments = [seg for seg in segments if seg['length'] >= 2]
+    valid_segments = [seg for seg in segments if seg['length'] >= 4]
 
     if not valid_segments:
         return ""

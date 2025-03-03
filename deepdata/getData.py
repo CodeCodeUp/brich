@@ -6,12 +6,13 @@ from datetime import datetime
 urls = {
     1: 'https://www.ub8.com/ajax/draw/TWBSSC/result?numOfDraw=3000',
     2: 'https://www.ub8.com/ajax/draw/ASHAREF2SSC/result?numOfDraw=3000',
-    3: 'https://www.ub8.com/ajax/draw/APF10SSC/result?numOfDraw=3000'
+    3: 'https://www.ub8.com/ajax/draw/APF10SSC/result?numOfDraw=3000',
+    4: 'https://www.ub8.com/ajax/draw/BAF5SSC/result?numOfDraw=3000'
 }
 
 # 创建会话对象
 session = requests.Session()
-
+session.cookies.set('visitor_id', 'bef8e599-0bc7-4305-8dfa-228b1eb71ed5')
 # 遍历URL字典
 for key, url in urls.items():
     # 发送请求并获取响应

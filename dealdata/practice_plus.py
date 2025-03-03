@@ -27,6 +27,7 @@ def Solution_2(data):
         if actual_lose > 6:
             current_streak = False
             simulation_lose = 0
+            # current_fib_index = -1
             current_fib_index = 0
             actual_lose = 0
         current_fib = fib_sequence[current_fib_index]
@@ -70,7 +71,9 @@ for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_f
 # choose
 # 稳
 # A [two:>=5,one:>=5]
-# T [five:< 5,two:< 5,one:< 5]
+# T [one:< 5,two:< 5,five:< 5]
+# Z [five:>=5]
+# B [×]
 
 
 def Solution_3(data):
