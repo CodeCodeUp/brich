@@ -32,7 +32,7 @@ def Solution_2(col, data):
             actual_lose = 0
         current_fib = fib_sequence[current_fib_index]
         bet = current_fib * 10
-        if num >= 5:  # Correct guess
+        if num < 5:  # Correct guess
             total_integral += bet * 0.8
             simulation_lose += bet * 0.8
             if current_streak:
@@ -69,7 +69,7 @@ for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_f
 
 
 # 示例数据，包含数据
-
+# 3-07 新增降频法，在系数过大的时候考虑通过成本差价降低系数 | 再趋势发生变化的第一次后再开始
 # choose
 # 稳
 # A [two:>=5,one:>=5]
