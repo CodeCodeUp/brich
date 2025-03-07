@@ -1,7 +1,7 @@
 from dealdata.get_data import get_data
 
 
-def Solution_2(data):
+def Solution_2(col, data):
     actual_bet_list = [0]
     total_integral = 1000
     actual_integral = 1000
@@ -19,20 +19,20 @@ def Solution_2(data):
         #     simulation_lose = 0
         #     current_fib_index = 0
         #     actual_lose = 0
-        if (simulation_lose < (-12)) & (False == current_streak):
+        if (simulation_lose < (-60)) & (False == current_streak):
             current_streak = True
             actual_lose = 0
             simulation_lose = 0
             current_fib_index = 0
-        if actual_lose > 6:
+        if actual_lose > 30:
             current_streak = False
             simulation_lose = 0
-            # current_fib_index = -1
+            # current_fib_index = -2
             current_fib_index = 0
             actual_lose = 0
         current_fib = fib_sequence[current_fib_index]
-        bet = current_fib * 2
-        if num < 5:  # Correct guess
+        bet = current_fib * 10
+        if num >= 5:  # Correct guess
             total_integral += bet * 0.8
             simulation_lose += bet * 0.8
             if current_streak:
@@ -49,6 +49,8 @@ def Solution_2(data):
                 actual_lose -= bet
                 actual_integral -= bet
                 actual_bet_list.append(bet)
+                if actual_integral < 0:
+                    print(f"{col}出现小于0: {actual_integral}")
             # Move Fibonacci index forward by 1 and extend the sequence if needed
             current_fib_index += 1
             while current_fib_index >= len(fib_sequence):
@@ -62,7 +64,7 @@ def Solution_2(data):
 # 模拟减少积分大于n后，斐波那契归1后开始实际运行，实际积分大于m后。重新开始上述操作。
 for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_five']:
     data = get_data()[col].tolist()
-    final_integral = Solution_2(data)
+    final_integral = Solution_2(col, data)
     print(f"Solution_2-{col}最后的数量为: {final_integral}")
 
 
