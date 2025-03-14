@@ -1,5 +1,5 @@
 database:
-  url: "mysql+pymysql://root:123456@127.0.0.1:3306/brich"
+  url: "mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich"
 
 email:
   enabled: false  # 是否启用邮件通知

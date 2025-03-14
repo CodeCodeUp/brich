@@ -14,25 +14,25 @@ def Solution_2(col, data):
     for num_str in data:
         num = int(num_str)
         # 添加前期模拟数量过多清空策略
-        # if (simulation_lose > 20) & (False == current_streak):
-        #     current_streak = False
-        #     simulation_lose = 0
-        #     current_fib_index = 0
-        #     actual_lose = 0
-        if (simulation_lose < (-60)) & (False == current_streak):
+        if (simulation_lose > 30) & (False == current_streak):
+            current_streak = False
+            simulation_lose = 0
+            current_fib_index = 0
+            actual_lose = 0
+        if (simulation_lose < (-15)) & (False == current_streak):
             current_streak = True
             actual_lose = 0
             simulation_lose = 0
             current_fib_index = 0
-        if actual_lose > 30:
+        if actual_lose > 9.5:
             current_streak = False
             simulation_lose = 0
             # current_fib_index = -2
             current_fib_index = 0
             actual_lose = 0
         current_fib = fib_sequence[current_fib_index]
-        bet = current_fib * 10
-        if num < 5:  # Correct guess
+        bet = current_fib * 4
+        if num >= 5:  # Correct guess
             total_integral += bet * 0.8
             simulation_lose += bet * 0.8
             if current_streak:
@@ -73,7 +73,7 @@ for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_f
 # choose
 # 稳
 # A [two:>=5,one:>=5]
-# T [one:< 5,two:< 5,five:< 5]
+# T [five:< 5,one:< 5,two:< 5]
 # Z [five:>=5]
 # B [×]
 

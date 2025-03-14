@@ -5,6 +5,7 @@ from strategy_consecutive import calculate_consecutive_big_small
 from statistics_odd_even import calculate_odd_even
 from statistics_odd_even_consecutive import calculate_consecutive_odd_even
 from statistics_big_small_continue import analyze_data
+from times_odd_even import count_consecutive_odds_evens
 
 
 def main():
@@ -54,10 +55,15 @@ def main():
     probability_calculator.print_probability()
     print()
 
-    print('# 统计总的连续情况')
+    print('# 统计大小总的连续情况')
     for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_five']:
         data = analyze_data(df[col].tolist())
         print(f"{col}:{data}")
+
+    print('统计 单/双 连续出现n次的次数')
+    for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_five']:
+        print(f"{col}:单/双 连续出现n次的次数")
+        count_consecutive_odds_evens(df[col].tolist())
 
 
 if __name__ == '__main__':
