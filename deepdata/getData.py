@@ -102,13 +102,13 @@ class LotteryMonitor:
                 self.consecutive_counts[url_type][pos]["small"] = 0
                 if self.consecutive_counts[url_type][pos]["big"] > self.threshold_config[url_type][pos]["big"]:
                     self.send_email(
-                        f"类型{url_type} 位置{pos} 连续大 {self.consecutive_counts[url_type][pos]['big']} 次")
+                        f"{url_type}--{pos} --B-- {self.consecutive_counts[url_type][pos]['big']} ")
             else:
                 self.consecutive_counts[url_type][pos]["small"] += 1
                 self.consecutive_counts[url_type][pos]["big"] = 0
                 if self.consecutive_counts[url_type][pos]["small"] > self.threshold_config[url_type][pos]["small"]:
                     self.send_email(
-                        f"类型{url_type} 位置{pos} 连续小 {self.consecutive_counts[url_type][pos]['small']} 次")
+                        f"{url_type}--{pos} --S-- {self.consecutive_counts[url_type][pos]['small']} ")
 
 
 def main():
