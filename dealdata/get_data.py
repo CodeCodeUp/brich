@@ -8,7 +8,8 @@ def get_data():
 
     # SELECT * FROM base_data WHERE `type` = 2  and insert_time > '2025-02-17' order by id
     # 查询数据
-    query = "SELECT * FROM base_data WHERE `type` = 1 and insert_time > '2025-03-14' order by id "
+    query = ("SELECT * FROM base_data WHERE `type` = 4 and insert_time > '2025-03-17'"
+             " and insert_time < '2025-03-18'  order by id ")
     df = pd.read_sql(query, engine)
 
     # 将number_one到number_five列转换为数值类型

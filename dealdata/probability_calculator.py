@@ -51,10 +51,8 @@ class ProbabilityCalculator:
     def print_probability(self):
         """
         打印每列每个数字的出现次数和概率
+        :rtype: object
         """
         counts_df, probabilities_df = self.calculate_probability()
-
-        print("每列数字出现次数：")
-        print(counts_df)
-        print("\n每列数字出现概率：")
-        print(probabilities_df)
+        return counts_df, probabilities_df
+        

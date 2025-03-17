@@ -2,10 +2,11 @@
 from collections import Counter
 
 
+# 单双已改成大小
 def count_consecutive_odds_evens(data):
     # 判断数字是单数（奇数）还是双数（偶数）
     def is_odd(num):
-        return num % 2 != 0
+        return num < 5
 
     # 存储连续单数和双数的出现次数
     odd_counts = []
@@ -37,23 +38,8 @@ def count_consecutive_odds_evens(data):
     odd_count_results = Counter(odd_counts)
     even_count_results = Counter(even_counts)
 
-    # 输出统计结果
-    print("统计结果：")
+    return odd_count_results, even_count_results
 
-    # 打印单数（奇数）的统计结果
-    print("\n单数（奇数）连续出现次数：")
-    if odd_count_results:
-        for count, freq in sorted(odd_count_results.items()):
-            print(f"连续 {count} 次: {freq} 次")
-    else:
-        print("没有连续的单数出现！")
 
-    # 打印双数（偶数）的统计结果
-    print("\n双数（偶数）连续出现次数：")
-    if even_count_results:
-        for count, freq in sorted(even_count_results.items()):
-            print(f"连续 {count} 次: {freq} 次")
-    else:
-        print("没有连续的双数出现！")
 
 

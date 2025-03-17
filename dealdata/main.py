@@ -52,7 +52,12 @@ def main():
     # 创建概率计算器对象
     probability_calculator = ProbabilityCalculator(df, ['number_one', 'number_two', 'number_three', 'number_four', 'number_five'])
     # 计算概率并打印结果
-    probability_calculator.print_probability()
+    result = probability_calculator.print_probability()
+    print("每列数字出现次数：")
+    print(result[0])
+    print("\n每列数字出现概率：")
+    print(result[1])
+
     print()
 
     print('# 统计大小总的连续情况')
@@ -60,10 +65,20 @@ def main():
         data = analyze_data(df[col].tolist())
         print(f"{col}:{data}")
 
-    print('统计 单/双 连续出现n次的次数')
+    print('统计 大/小 连续出现n次的次数')
     for col in ['number_one', 'number_two', 'number_three', 'number_four', 'number_five']:
-        print(f"{col}:单/双 连续出现n次的次数")
-        count_consecutive_odds_evens(df[col].tolist())
+        result = count_consecutive_odds_evens(df[col].tolist())
+        # 打印单数（奇数）的统计结果
+        print(f"{col}小数连续出现次数：")
+        if result[0]:
+            for count, freq in sorted(result[0].items()):
+                print(f"连续 {count} 次: {freq} 次")
+
+        # 打印双数（偶数）的统计结果
+        print(f"{col}大数连续出现次数：")
+        if result[1]:
+            for count, freq in sorted(result[1].items()):
+                print(f"连续 {count} 次: {freq} 次")
 
 
 if __name__ == '__main__':

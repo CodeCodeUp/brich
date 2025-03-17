@@ -32,7 +32,7 @@ def Solution_2(col, data):
             actual_lose = 0
         current_fib = fib_sequence[current_fib_index]
         bet = current_fib * 4
-        if num >= 5:  # Correct guess
+        if num < 5:  # Correct guess
             total_integral += bet * 0.8
             simulation_lose += bet * 0.8
             if current_streak:
