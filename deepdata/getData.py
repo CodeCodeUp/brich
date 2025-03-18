@@ -48,7 +48,7 @@ class LotteryMonitor:
 
         # 构造邮件内容
         msg = MIMEText(content)
-        msg['Subject'] = 'Lottery Alert'
+        msg['Subject'] = content
         msg['From'] = self.email_config["sender"]
         msg['To'] = self.email_config["receiver"]
 
