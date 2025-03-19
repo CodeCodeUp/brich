@@ -122,7 +122,7 @@ def main():
                 for idx, col in enumerate(cols):
                     with col:
                         item = column_items[idx]
-                        with st.expander(f"🔁 {item} B/S", expanded=True):
+                        with st.expander(f"🔁 {item} B/S", expanded=False):
                             result = count_consecutive_odds_evens(df[item].tolist())
 
                             # 紧凑型布局
