@@ -15,6 +15,8 @@ urls:
   3: "https://www.ub8.com/ajax/draw/APF10SSC/result?numOfDraw=3000"
   4: "https://www.ub8.com/ajax/draw/BAF5SSC/result?numOfDraw=3000"
   5: "https://www.ub8.com/ajax/draw/BAF3SSC/result?numOfDraw=3000"
+  6: "https://www.ub8.com/ajax/draw/F1TB/result?numOfDraw=3000"
+  7: "https://www.ub8.com/ajax/draw/JSTB/result?numOfDraw=3000"
 
 thresholds:
   1:
@@ -47,3 +49,16 @@ thresholds:
     3: { big: 8, small: 8 }
     4: { big: 8, small: 8 }
     5: { big: 8, small: 8 }
+  6:
+    1: { big: 88, small: 88 }
+    2: { big: 88, small: 88 }
+    3: { big: 88, small: 88 }
+    4: { big: 4, small: 4 }
+    5: { big: 88, small: 88 }
+  7:
+    1: { big: 88, small: 88 }
+    2: { big: 88, small: 88 }
+    3: { big: 88, small: 88 }
+    4: { big: 4, small: 4 }
+    5: { big: 88, small: 88 }
+
