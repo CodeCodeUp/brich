@@ -133,14 +133,18 @@ def main():
                                 st.caption(f"**S**")
                                 if result[0]:
                                     for count, freq in sorted(result[0].items()):
-                                        st.progress(freq / 100, text=f"{count}: {freq}s")
+                                        # Normalize freq to ensure it's within [0.0, 1.0]
+                                        normalized_freq = min(freq / 100, 1.0)
+                                        st.progress(normalized_freq, text=f"{count}: {freq}s")
 
                             # 双数统计
                             with cols_inner[0]:
                                 st.caption(f"**B**")
                                 if result[1]:
                                     for count, freq in sorted(result[1].items()):
-                                        st.progress(freq / 100, text=f"{count}: {freq}s")
+                                        # Normalize freq to ensure it's within [0.0, 1.0]
+                                        normalized_freq = min(freq / 100, 1.0)
+                                        st.progress(normalized_freq, text=f"{count}: {freq}s")
 
 
 if __name__ == "__main__":
