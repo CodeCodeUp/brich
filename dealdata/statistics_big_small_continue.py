@@ -4,10 +4,10 @@ def analyze_data(data, num=4):
 
     # 生成所有连续段的信息
     segments = []
-    current_type = '小' if data[0] < 5 else '大'
+    current_type = 's' if data[0] < 5 else 'D'
     start = 0
     for i in range(1, len(data)):
-        elem_type = '小' if data[i] < 5 else '大'
+        elem_type = 's' if data[i] < 5 else 'D'
         if elem_type != current_type:
             segments.append({
                 'type': current_type,
