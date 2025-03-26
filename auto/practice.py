@@ -38,7 +38,7 @@ def Solution(base_data):
             actual_lose = 0
             simulation_lose = 0
             current_fib_index = 0
-        if actual_lose > 15:
+        if actual_lose >= 15:
             current_streak = False
             simulation_lose = 0
             # current_fib_index = -2
@@ -81,7 +81,7 @@ def Solution_times(base_data):
     fib_sequence = [1, 1]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
-    initial_bet = 4             # 初始固定为2
+    initial_bet = 4             #
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
@@ -93,11 +93,11 @@ def Solution_times(base_data):
             current_streak = current_streak + 1 if is_B(num) else 0
 
             # 触发下注条件：连续5次大
-            if current_streak >= 5:
+            if current_streak >= 4:
                 in_betting_group = True
                 current_streak = 0
                 current_fib_index = 0          # 重置斐波那契索引（确保首次下注为2）
-                profit_target = initial_bet * 3  # 固定盈利目标为6
+                profit_target = initial_bet * 3
                 trigger_integral = total_integral  # 记录触发时的积分
         else:
             # 动态扩展斐波那契数列（确保索引有效）
@@ -105,7 +105,7 @@ def Solution_times(base_data):
                 fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])
 
             # 计算本次下注金额（基于斐波那契索引）
-            bet = 2 * fib_sequence[current_fib_index]
+            bet = initial_bet * fib_sequence[current_fib_index]
             actual_bet_list.append(bet)
             if total_integral < bet:
                 break  # 积分不足，终止策略
@@ -113,7 +113,7 @@ def Solution_times(base_data):
             # 扣除积分并更新当前下注组的总下注金额
             total_integral -= bet
 
-            if not is_B(num) and num != -1: # 猜「小」成功
+            if not is_B(num) and num != -1:
                 total_integral += bet * 2
                 if total_integral >= trigger_integral + profit_target:
                     in_betting_group = False  # 达标后退出下注组
