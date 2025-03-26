@@ -1,4 +1,4 @@
-import numpy as np
+
 import streamlit as st
 import pandas as pd
 import datetime
@@ -11,7 +11,8 @@ from statistics_odd_even import calculate_odd_even
 from statistics_big_small_continue import analyze_data
 from times_odd_even import count_consecutive_odds_evens
 from statistics_sb_data import get_result
-
+from statistics_sb_data import get_ds_result
+from statistics_sb_data import count_sb_odds_evens
 
 # 数据获取函数（增加参数）
 def get_base_data(data_type, start_time, end_time):
@@ -76,6 +77,13 @@ def main():
             # 添加 count 列示例（根据你的实际数据结构调整）
             result['count'] = result['pattern'].apply(len)
             result = result[::-1].reset_index(drop=True)
+            ds_result = pd.DataFrame(
+                get_ds_result(df['number_four'].tolist()),
+                columns=['pattern']  # 添加列名
+            )
+            # 添加 count 列示例（根据你的实际数据结构调整）
+            ds_result['count'] = ds_result['pattern'].apply(len)
+            ds_result = ds_result[::-1].reset_index(drop=True)
             with st.expander("🔍 B/S s", expanded=True):
                 col1, col2 = st.columns([4, 1])
 
@@ -105,8 +113,76 @@ def main():
                     d_prob = round((d_count / total_chars) * 100, 2)
                     s_prob = round((s_count / total_chars) * 100, 2)
                     st.metric("long", f"{result['count'].max()} ")
-                    st.metric("B", f"{d_prob} ")
-                    st.metric("x", f"{s_prob} ")
+                    st.metric("D", f"{d_prob} ")
+                    st.metric("s", f"{s_prob} ")
+            with st.expander("🔍 S/o s", expanded=True):
+                col1, col2 = st.columns([4, 1])
+
+                with col1:
+                    # 确保 result 是 DataFrame
+                    if isinstance(ds_result, list):  # 如果原始结果是列表
+                        ds_result = pd.DataFrame(ds_result, columns=['pattern'])
+
+                    # 添加样式
+                    styled_result = ds_result.style \
+                        .applymap(lambda x: "color: green" if "S" in x else "color: red", subset=['pattern']) \
+                        .set_properties(**{
+                        'font-size': '16px',
+                        'text-align': 'center'
+                    })
+
+                    st.dataframe(styled_result, use_container_width=True)
+
+                # 右侧添加统计指标
+                with col2:
+                    # 统计每个模式中'D'的出现次数
+                    d_count = ds_result['pattern'].str.count('S').sum()
+                    s_count = ds_result['pattern'].str.count('o').sum()
+                    # 统计总字符数（所有模式长度之和）
+                    total_chars = ds_result['pattern'].str.len().sum()
+                    # 计算'D'的概率（保留两位小数）
+                    d_prob = round((d_count / total_chars) * 100, 2)
+                    s_prob = round((s_count / total_chars) * 100, 2)
+                    st.metric("long", f"{ds_result['count'].max()} ")
+                    st.metric("S", f"{d_prob} ")
+                    st.metric("o", f"{s_prob} ")
+            with st.container():
+                # 直接创建五个等宽列
+                cols = st.columns(1)
+
+                # 配置每列显示的内容
+                column_items = [
+                    'number_four'
+                ]
+
+                # 遍历五列
+                for idx, col in enumerate(cols):
+                    with col:
+                        item = column_items[idx]
+                        with st.expander(f"🔁  B/S", expanded=False):
+                            result = count_sb_odds_evens(df[item].tolist())
+
+                            # 紧凑型布局
+                            cols_inner = st.columns(2)
+
+                            # 单数统计
+                            with cols_inner[0]:
+                                st.caption(f"**S**")
+                                if result[0]:
+                                    for count, freq in sorted(result[0].items()):
+                                        # Normalize freq to ensure it's within [0.0, 1.0]
+                                        normalized_freq = min(freq / 100, 1.0)
+                                        st.progress(normalized_freq, text=f"{count}: {freq}s")
+
+                            # 双数统计
+                            with cols_inner[1]:
+                                st.caption(f"**B**")
+                                if result[1]:
+                                    for count, freq in sorted(result[1].items()):
+                                        # Normalize freq to ensure it's within [0.0, 1.0]
+                                        normalized_freq = min(freq / 100, 1.0)
+                                        st.progress(normalized_freq, text=f"{count}: {freq}s")
+
         else:
             with st.spinner("分析中..."):
                 df = get_base_data(data_type, start_time, end_time)
