@@ -73,7 +73,8 @@ def count_sb_odds_evens(data):
 
     # 遍历数据并统计连续单数或双数
     for i in range(1, len(data)):
-        if data[i] == -1:
+        if int(data[i]) == -1:
+            current_count = 1
             continue
         if is_odd(data[i]) == is_current_odd:
             current_count += 1

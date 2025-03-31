@@ -77,7 +77,7 @@ def Solution(base_data):
 
 def Solution_times(base_data):
     actual_bet_list = [0]
-    total_integral = 1000      # 初始总积分
+    total_integral = 2400      # 初始总积分
     fib_sequence = [1, 1]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
@@ -93,7 +93,7 @@ def Solution_times(base_data):
             current_streak = current_streak + 1 if is_B(num) else 0
 
             # 触发下注条件：连续5次大
-            if current_streak >= 4:
+            if current_streak >= 7:
                 in_betting_group = True
                 current_streak = 0
                 current_fib_index = 0          # 重置斐波那契索引（确保首次下注为2）
