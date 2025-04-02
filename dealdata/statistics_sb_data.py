@@ -13,7 +13,7 @@ def get_result(data):
         elif 11 <= num <= 17:
             labels.append('D')
 
-    # 统计连续出现的长龙情况
+
     result = []
     if labels:
         current_label = labels[0]
