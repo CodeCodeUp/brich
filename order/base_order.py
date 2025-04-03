@@ -23,6 +23,19 @@ def is_SB_S(num):
         return False
 
 
+def is_order_now():
+    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
+    query = "SELECT count(1) FROM auto_order WHERE nextOrder = 0 OR isFinish = 0"
+    df = pd.read_sql(query, engine)
+    if df.empty:
+        return False
+    count = df.iloc[0, 0]
+    if count > 0:
+        return True
+    else:
+        return False
+
+
 def get_request_id():
     engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     query = "SELECT requestId FROM auto_order WHERE id = (SELECT MAX(id) FROM auto_order)"
@@ -40,7 +53,7 @@ def get_base_data(data_type):
         SELECT * 
         FROM base_data 
         WHERE `type` = %(data_type)s 
-        ORDER BY id DESC limit 7
+        ORDER BY id DESC limit 8
     """
     df = pd.read_sql(query, engine, params={
         'data_type': data_type
@@ -51,7 +64,7 @@ def get_base_data(data_type):
 
 def execute_api_request(data):
     url = 'https://www.ub8.com/ajax/board-game/order'
-    # 设置cookie visitor_id=1ac06ae0-7dab-4bac-80cb-b56b8312a809; _ga=GA1.1.1712049269.1739547486; _ga_FLS6PM8998=GS1.1.1743600029.78.1.1743602138.0.0.0; SessionId=ad749b2e-01f4-45e2-ab72-5f1f10cfc5e5
+
     cookies = {
         'visitor_id': '1ac06ae0-7dab-4bac-80cb-b56b8312a809',
         '_ga': 'GA1.1.1712049269.1739547486',
@@ -69,20 +82,21 @@ def execute_api_request(data):
 
 def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier, base, draw_total):
     engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
-
     try:
-        with engine.connect() as connection:
+        with engine.begin() as conn:
             # 使用 text 函数将 SQL 字符串包装成可执行对象
+            logging.info(f"开始执行插入操作: {request_id}")
             query = text("""
-                INSERT INTO auto_order (requestId, drawType, drawNumber, stake, pick, base, diceMultiplier, total)
-                SELECT :request_id, :draw_type, :draw_number, :stake, :pick, :base, :dice_multiplier, :total
-                FROM DUAL
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM auto_order
-                    WHERE drawType = :draw_type AND drawNumber = :draw_number AND pick = :pick
-                )
-            """)
-            connection.execute(query, {
+                            INSERT INTO auto_order (requestId, drawType, drawNumber, stake, pick, base, diceMultiplier, total)
+                            SELECT :request_id, :draw_type, :draw_number, :stake, :pick, :base, :dice_multiplier, :total
+                            FROM DUAL
+                            WHERE NOT EXISTS (
+                                SELECT 1 FROM auto_order
+                                WHERE drawType = :draw_type AND drawNumber = :draw_number AND pick = :pick
+                            )
+                        """)
+
+            conn.execute(query, {
                 'request_id': request_id,
                 'draw_type': draw_type,
                 'draw_number': draw_number,
@@ -92,6 +106,8 @@ def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier
                 'dice_multiplier': dice_multiplier,
                 'total': draw_total
             })
+            logging.info(f"插入成功: {request_id}")
+
     except Exception as e:
         logging.error(f"insert_data: {e}")
 
@@ -179,6 +195,7 @@ def process_un_finish():
                     """)
                     conn.execute(update_query, {"id": row['id'], "total": draw_total})
                 if int(draw_total) >= (2000 + int(row["stake"]) * 3):
+                    logging.info("完成此次下单")
                     continue
                 num = str(int(draw_number[8:]) + 1).zfill(4)
                 # 数据库读取最新的requestId
@@ -187,6 +204,7 @@ def process_un_finish():
                 request_id = str(hex(int(df_request_id['requestId'].tolist()[0], 16) + 1))[2:]
                 insert_data(request_id, draw_type, f"{draw_number[:8]}-{num}",
                             draw_stake, draw_pick, 1, draw_base, draw_total)
+                logging.info(f"插入下一条数据成功, requestId: {request_id}, drawNumber: {draw_number[:8]}-{num}")
         except Exception as e:
             logging.error(f"process_un_finish: {e}")
         time.sleep(5)
@@ -194,11 +212,14 @@ def process_un_finish():
 
 def process_do_order():
     while True:
+        if is_order_now():
+            logging.info("当前有订单正在进行，跳过本次插入")
+            return
         df = get_base_data(6)
         if df.empty:
             return
         data = df['number_four'].tolist()
-        # 如果全部is_SB_B或is_SB_S,插入auto_order数据，pick相反
+        # 如果全部is_SB_B或is_SB_S且没有正在进行的,插入auto_order数据，pick相反
         if all(is_SB_B(int(num)) for num in data):
             pick = 'SMALL'
         elif all(is_SB_S(int(num)) for num in data):
@@ -233,9 +254,9 @@ if __name__ == "__main__":
     # 异步执行两个函数
     thread1 = threading.Thread(target=process_un_orders)
     thread2 = threading.Thread(target=process_un_finish)
-    # thread3 = threading.Thread(target=process_do_order)
+    thread3 = threading.Thread(target=process_do_order)
     thread1.start()
     thread2.start()
-    # thread3.start()
+    thread3.start()
 
 

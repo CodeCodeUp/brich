@@ -76,10 +76,10 @@ def get_order_data(data_type):
     return df
 
 
-def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier):
+def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier, base):
     engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     try:
-        with engine.connect() as connection:
+        with engine.begin() as connection:
             # 使用 text 函数将 SQL 字符串包装成可执行对象
             query = text("""
                             INSERT INTO auto_order 
@@ -97,11 +97,10 @@ def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier
                 'draw_number': draw_number,
                 'stake': stake,
                 'pick': pick,
-                'base': '0',
+                'base': base,
                 'dice_multiplier': dice_multiplier,
                 'total': '2000'
             })
-            connection.commit()
             st.success("数据插入成功！")
     except IntegrityError:
         st.warning("数据已存在，未插入！")
@@ -158,9 +157,10 @@ def main():
         stake = st.text_input("stake", 5)
         index = 0 if is_S(int(order_data['number_four'].tolist()[0])) else 1
         pick = st.selectbox("pick", ['BIG', 'SMALL'], index=index)
+        base = st.text_input("base", 0)
         dice_multiplier = st.text_input("diceMultiplier", 1)
         if st.button("SAVE"):
-            insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier)
+            insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier, base)
         if st.button("STOP"):
             stop_order()
 
