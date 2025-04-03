@@ -233,7 +233,9 @@ if __name__ == "__main__":
     # 异步执行两个函数
     thread1 = threading.Thread(target=process_un_orders)
     thread2 = threading.Thread(target=process_un_finish)
+    thread3 = threading.Thread(target=process_do_order)
     thread1.start()
     thread2.start()
+    thread3.start()
 
 
