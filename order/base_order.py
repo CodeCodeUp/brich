@@ -25,16 +25,18 @@ def is_SB_S(num):
 
 def execute_api_request(data):
     url = 'https://www.ub8.com/ajax/board-game/order'
-    # 设置cookie
+    # 设置cookie visitor_id=5273c9a8-a40b-4e2c-b516-4e936dd1dc6f; _ga=GA1.1.56548488.1740960454; _ga_FLS6PM8998=GS1.1.1743659039.2.1.1743659095.0.0.0
     cookies = {
-        'visitor_id': 'bef8e599-0bc7-4305-8dfa-228b1eb71ed5'
+        'visitor_id': '5273c9a8-a40b-4e2c-b516-4e936dd1dc6f',
+        '_ga': 'GA1.1.56548488.1740960454',
+        '_ga_FLS6PM8998': 'GS1.1.1743659039.2.1.1743659095.0.0.0'
     }
     try:
         response = requests.post(url, json=data, cookies=cookies)
         response.raise_for_status()
         return True
     except requests.RequestException as e:
-        print(f"请求接口时出错: {e}")
+        logging.error(f"请求接口时出错: {e}")
         return False
 
 
@@ -65,7 +67,7 @@ def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier
             })
             connection.commit()
     except Exception as e:
-        print(f"insert_data: {e}")
+        logging.error(f"insert_data: {e}")
 
 
 def process_un_orders():
@@ -104,7 +106,7 @@ def process_un_orders():
         except Exception as e:
             logging.error(f"process_un_orders: {e}")
 
-        time.sleep(1)
+        time.sleep(5)
 
 
 def process_un_finish():
@@ -161,7 +163,7 @@ def process_un_finish():
                             draw_stake, draw_pick, 1, draw_base, draw_total)
         except Exception as e:
             logging.error(f"process_un_finish: {e}")
-        time.sleep(1)
+        time.sleep(5)
 
 
 if __name__ == "__main__":
