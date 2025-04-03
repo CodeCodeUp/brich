@@ -51,11 +51,12 @@ def get_base_data(data_type):
 
 def execute_api_request(data):
     url = 'https://www.ub8.com/ajax/board-game/order'
-    # 设置cookie visitor_id=5273c9a8-a40b-4e2c-b516-4e936dd1dc6f; _ga=GA1.1.56548488.1740960454; _ga_FLS6PM8998=GS1.1.1743659039.2.1.1743659095.0.0.0
+    # 设置cookie visitor_id=1ac06ae0-7dab-4bac-80cb-b56b8312a809; _ga=GA1.1.1712049269.1739547486; _ga_FLS6PM8998=GS1.1.1743600029.78.1.1743602138.0.0.0; SessionId=ad749b2e-01f4-45e2-ab72-5f1f10cfc5e5
     cookies = {
-        'visitor_id': '5273c9a8-a40b-4e2c-b516-4e936dd1dc6f',
-        '_ga': 'GA1.1.56548488.1740960454',
-        '_ga_FLS6PM8998': 'GS1.1.1743659039.2.1.1743659095.0.0.0'
+        'visitor_id': '1ac06ae0-7dab-4bac-80cb-b56b8312a809',
+        '_ga': 'GA1.1.1712049269.1739547486',
+        '_ga_FLS6PM8998': 'GS1.1.1743600029.78.1.1743602138.0.0.0',
+        'SessionId': 'ad749b2e-01f4-45e2-ab72-5f1f10cfc5e5'
     }
     try:
         response = requests.post(url, json=data, cookies=cookies)
@@ -91,7 +92,6 @@ def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier
                 'dice_multiplier': dice_multiplier,
                 'total': draw_total
             })
-            connection.commit()
     except Exception as e:
         logging.error(f"insert_data: {e}")
 
@@ -111,7 +111,7 @@ def process_un_orders():
                     "drawType": row["drawType"],
                     "drawNumber": row["drawNumber"],
                     "orderItems": [{"stake": bet, "pick": row["pick"]}],
-                    "diceMultiplier": row["diceMultiplier"],
+                    "diceMultiplier": int(row["diceMultiplier"]),
                     "categoryPrize": row["categoryPrize"]
                 }
                 logging.info(f"处理订单 {row['requestId']}，请求数据: {data}")
@@ -233,9 +233,9 @@ if __name__ == "__main__":
     # 异步执行两个函数
     thread1 = threading.Thread(target=process_un_orders)
     thread2 = threading.Thread(target=process_un_finish)
-    thread3 = threading.Thread(target=process_do_order)
+    # thread3 = threading.Thread(target=process_do_order)
     thread1.start()
     thread2.start()
-    thread3.start()
+    # thread3.start()
 
 
