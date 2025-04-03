@@ -30,6 +30,18 @@ def is_S(num):
         return False
 
 
+def stop_order():
+    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
+    query = text("UPDATE auto_order SET nextOrder = 1, isFinish = 1")
+    try:
+        # 使用 engine.begin() 自动管理事务
+        with engine.begin() as connection:
+            connection.execute(query)
+        st.success("操作成功！")
+    except Exception as e:
+        st.error(f"操作失败: {str(e)}")
+
+
 # 数据获取函数（增加参数）
 def get_base_data(data_type, start_time, end_time):
     engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
@@ -149,6 +161,8 @@ def main():
         dice_multiplier = st.text_input("diceMultiplier", 1)
         if st.button("SAVE"):
             insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier)
+        if st.button("STOP"):
+            stop_order()
 
     st.button('DEL')
     if data_type in [6, 7]:
