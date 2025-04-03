@@ -25,9 +25,13 @@ def is_SB_S(num):
 
 def execute_api_request(data):
     url = 'https://www.ub8.com/ajax/board-game/order'
+    # 设置cookie
+    cookies = {
+        'visitor_id': 'bef8e599-0bc7-4305-8dfa-228b1eb71ed5'
+    }
     try:
-        # response = requests.post(url, json=data)
-        # response.raise_for_status()
+        response = requests.post(url, json=data, cookies=cookies)
+        response.raise_for_status()
         return True
     except requests.RequestException as e:
         print(f"请求接口时出错: {e}")
@@ -36,6 +40,7 @@ def execute_api_request(data):
 
 def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier, base, draw_total):
     engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
+
     try:
         with engine.connect() as connection:
             # 使用 text 函数将 SQL 字符串包装成可执行对象
@@ -108,10 +113,10 @@ def process_un_finish():
         try:
             query = "SELECT * FROM auto_order WHERE nextOrder = 1 AND isFinish = 0"
             query_last = "SELECT * FROM base_data WHERE type = %s AND nid = %s"
+            query_request_id = "SELECT requestId FROM auto_order WHERE id = (select max(id) from auto_order)"
             df = pd.read_sql(query, engine)
 
             for _, row in df.iterrows():
-                request_id = row["requestId"]
                 draw_type = row["drawType"]
                 draw_number = row["drawNumber"].replace('-', '')
                 draw_pick = row["pick"]
@@ -148,6 +153,10 @@ def process_un_finish():
                 if int(draw_total) >= (2000 + int(row["stake"]) * 3):
                     continue
                 num = str(int(draw_number[8:]) + 1).zfill(4)
+                # 数据库读取最新的requestId
+                df_request_id = pd.read_sql(query_request_id, engine)
+                # 16进制+1
+                request_id = str(hex(int(df_request_id['requestId'].tolist()[0], 16) + 1))[2:]
                 insert_data(request_id, draw_type, f"{draw_number[:8]}-{num}",
                             draw_stake, draw_pick, 1, draw_base, draw_total)
         except Exception as e:

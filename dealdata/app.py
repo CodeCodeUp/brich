@@ -97,6 +97,17 @@ def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier
         st.error(f"插入数据时出错: {e}")
 
 
+def get_request_id():
+    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
+    query = "SELECT requestId FROM auto_order WHERE id = (SELECT MAX(id) FROM auto_order)"
+    df_request_id = pd.read_sql(query, engine)
+    if df_request_id.empty:
+        return '195f6cc06a7'
+    # 16进制+1
+    last_request_id = str(hex(int(df_request_id['requestId'].tolist()[0], 16) + 1))[2:]
+    return last_request_id
+
+
 def main():
     # 设置默认时间策略
     # ---------------------------------------------------
@@ -128,7 +139,7 @@ def main():
         data_num = st.selectbox("选择统计数量", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], index=3)
         order_data = get_order_data(data_type)
         number = order_data['nid'].tolist()[0]
-        request_id = st.text_input("requestId", "195d29f8d91")
+        request_id = st.text_input("requestId", get_request_id())
         draw_type = st.text_input("drawType", "F1TB")
         num = str(int(number[8:]) + 1).zfill(4)
         draw_number = st.text_input("drawNumber", f"{number[:8]}-{num}")
