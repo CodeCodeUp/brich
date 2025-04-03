@@ -23,6 +23,32 @@ def is_SB_S(num):
         return False
 
 
+def get_request_id():
+    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
+    query = "SELECT requestId FROM auto_order WHERE id = (SELECT MAX(id) FROM auto_order)"
+    df_request_id = pd.read_sql(query, engine)
+    if df_request_id.empty:
+        return '195f6cc06a7'
+    # 16进制+1
+    last_request_id = str(hex(int(df_request_id['requestId'].tolist()[0], 16) + 1))[2:]
+    return last_request_id
+
+
+def get_base_data(data_type):
+    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
+    query = """
+        SELECT * 
+        FROM base_data 
+        WHERE `type` = %(data_type)s 
+        ORDER BY id DESC limit 7
+    """
+    df = pd.read_sql(query, engine, params={
+        'data_type': data_type
+    })
+    # 类型转换...
+    return df
+
+
 def execute_api_request(data):
     url = 'https://www.ub8.com/ajax/board-game/order'
     # 设置cookie visitor_id=5273c9a8-a40b-4e2c-b516-4e936dd1dc6f; _ga=GA1.1.56548488.1740960454; _ga_FLS6PM8998=GS1.1.1743659039.2.1.1743659095.0.0.0
@@ -52,7 +78,7 @@ def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier
                 FROM DUAL
                 WHERE NOT EXISTS (
                     SELECT 1 FROM auto_order
-                    WHERE drawType = :draw_type AND drawNumber = :draw_number
+                    WHERE drawType = :draw_type AND drawNumber = :draw_number AND pick = :pick
                 )
             """)
             connection.execute(query, {
@@ -163,6 +189,34 @@ def process_un_finish():
                             draw_stake, draw_pick, 1, draw_base, draw_total)
         except Exception as e:
             logging.error(f"process_un_finish: {e}")
+        time.sleep(5)
+
+
+def process_do_order():
+    while True:
+        df = get_base_data(6)
+        if df.empty:
+            return
+        data = df['number_four'].tolist()
+        # 如果全部is_SB_B或is_SB_S,插入auto_order数据，pick相反
+        if all(is_SB_B(int(num)) for num in data):
+            pick = 'SMALL'
+        elif all(is_SB_S(int(num)) for num in data):
+            pick = 'BIG'
+        else:
+            return
+        # 获取最新的requestId
+        request_id = get_request_id()
+        draw_type = 'F1TB'
+        # draw_number 为最后一个nid+1
+        number = df['nid'].tolist()[0]
+        num = str(int(number[8:]) + 1).zfill(4)
+        draw_number = f"{number[:8]}-{num}"
+        stake = 5
+        base = 0
+        dice_multiplier = 1
+        draw_total = 2000
+        insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier, base, draw_total)
         time.sleep(5)
 
 

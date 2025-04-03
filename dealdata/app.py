@@ -88,7 +88,7 @@ def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier
                             FROM DUAL
                             WHERE NOT EXISTS (
                                 SELECT 1 FROM auto_order
-                                WHERE drawType = :draw_type AND drawNumber = :draw_number
+                                WHERE drawType = :draw_type AND drawNumber = :draw_number AND pick = :pick
                             )
                         """)
             connection.execute(query, {
