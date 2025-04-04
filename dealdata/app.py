@@ -156,7 +156,7 @@ def main():
         draw_number = st.text_input("drawNumber", f"{number[:8]}-{num}")
         stake = st.text_input("stake", 5)
         index = 0 if is_S(int(order_data['number_four'].tolist()[0])) else 1
-        pick = st.selectbox("pick", ['BIG', 'SMALL'], index=index)
+        pick = st.selectbox("pick", ['BIG', 'SMALL', 'EVEN', 'ODD'], index=index)
         base = st.text_input("base", 0)
         dice_multiplier = st.text_input("diceMultiplier", 1)
         if st.button("SAVE"):

@@ -32,6 +32,26 @@ def is_SB_S(num):
         return False
 
 
+def is_D(num):
+    if num == -1:
+        return False
+    else:
+        if num % 2 == 0:
+            return True
+        else:
+            return False
+
+
+def is_O(num):
+    if num == -1:
+        return False
+    else:
+        if num % 2 != 0:
+            return True
+        else:
+            return False
+
+
 def is_order_now():
     engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     query = "SELECT count(1) FROM auto_order WHERE nextOrder = 0 OR isFinish = 0"
@@ -175,12 +195,23 @@ def process_un_finish():
                     continue
                 value = df_last['number_four'].tolist()[0]
                 logging.info(f"draw_pick {draw_pick}，value: {value}")
-                if is_SB_B(int(value)):
-                    value = 'BIG'
-                elif is_SB_S(int(value)):
-                    value = 'SMALL'
+                if draw_pick == 'BIG' or draw_pick == 'SMALL':
+                    if is_O(int(value)):
+                        value = 'BIG'
+                    elif is_D(int(value)):
+                        value = 'SMALL'
+                    else:
+                        value = 'DRAW'
+                if draw_pick == 'EVEN' or draw_pick == 'ODD':
+                    if is_O(int(value)):
+                        value = 'EVEN'
+                    elif is_D(int(value)):
+                        value = 'ODD'
+                    else:
+                        value = 'DRAW'
                 else:
-                    value = 'DRAW'
+                    logging.error(f"未知的类型: {draw_pick}")
+                    return
                 logging.info(f"draw_pick {draw_pick}，value: {value}")
                 if value == draw_pick:
                     draw_total = int(draw_total) + (int(draw_stake) * fib_sequence[int(draw_base)] * 2)
@@ -225,10 +256,12 @@ def process_do_order():
         # 如果全部is_SB_B或is_SB_S且没有正在进行的,插入auto_order数据，pick相反
         if all(is_SB_B(int(num)) for num in data):
             pick = 'SMALL'
+            logging.info(f"当前数据全部为大: {data}")
         elif all(is_SB_S(int(num)) for num in data):
             pick = 'BIG'
+            logging.info(f"当前数据全部为小: {data}")
         else:
-            return
+            continue
         # 获取最新的requestId
         request_id = get_request_id()
         draw_type = 'F1TB'
