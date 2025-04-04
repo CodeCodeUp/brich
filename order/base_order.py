@@ -8,7 +8,7 @@ import threading
 import logging
 
 
-fib_sequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+fib_sequence = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
 # Cookie 信息
 cookies = {
     'visitor_id': '1ac06ae0-7dab-4bac-80cb-b56b8312a809',
@@ -16,6 +16,7 @@ cookies = {
     '_ga_FLS6PM8998': 'GS1.1.1743697081.83.1.1743697103.0.0.0',
     'SessionId': 'de29c1a4-a8d8-49cb-a31a-f53be744a9fa'
 }
+
 
 def is_SB_B(num):
     if 11 <= num <= 17:
