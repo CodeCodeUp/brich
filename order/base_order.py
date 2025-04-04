@@ -167,6 +167,18 @@ def process_un_orders():
                         conn.execute(update_query, {"id": row['id'], "total": int(total) - bet})
 
                     logging.info(f"处理订单 {row['requestId']} 成功")
+                else:
+                    logging.error(f"处理订单 {row['requestId']} 失败")
+                    # 更新数据库中的状态
+                    with engine.begin() as conn:
+                        update_query = text("""
+                            UPDATE auto_order 
+                            SET nextOrder = 1, 
+                                isFinish = 1,
+                                update_time = NOW() 
+                            WHERE id = :id
+                        """)
+                        conn.execute(update_query, {"id": row['id']})
 
         except Exception as e:
             logging.error(f"process_un_orders: {e}")
