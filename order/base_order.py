@@ -196,16 +196,16 @@ def process_un_finish():
                 value = df_last['number_four'].tolist()[0]
                 logging.info(f"draw_pick {draw_pick}，value: {value}")
                 if draw_pick == 'BIG' or draw_pick == 'SMALL':
-                    if is_O(int(value)):
+                    if is_SB_B(int(value)):
                         value = 'BIG'
-                    elif is_D(int(value)):
+                    elif is_SB_S(int(value)):
                         value = 'SMALL'
                     else:
                         value = 'DRAW'
                 if draw_pick == 'EVEN' or draw_pick == 'ODD':
-                    if is_O(int(value)):
+                    if is_D(int(value)):
                         value = 'EVEN'
-                    elif is_D(int(value)):
+                    elif is_O(int(value)):
                         value = 'ODD'
                     else:
                         value = 'DRAW'
