@@ -1,4 +1,5 @@
 import time
+import random
 import requests
 import pandas as pd
 from sqlalchemy import create_engine
@@ -6,8 +7,15 @@ from sqlalchemy import text  # 添加text导入
 import threading
 import logging
 
-fib_sequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
 
+fib_sequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+# Cookie 信息
+cookies = {
+    'visitor_id': '1ac06ae0-7dab-4bac-80cb-b56b8312a809',
+    '_ga': 'GA1.1.1712049269.1739547486',
+    '_ga_FLS6PM8998': 'GS1.1.1743697081.83.1.1743697103.0.0.0',
+    'SessionId': 'de29c1a4-a8d8-49cb-a31a-f53be744a9fa'
+}
 
 def is_SB_B(num):
     if 11 <= num <= 17:
@@ -65,12 +73,6 @@ def get_base_data(data_type):
 def execute_api_request(data):
     url = 'https://www.ub8.com/ajax/board-game/order'
 
-    cookies = {
-        'visitor_id': '1ac06ae0-7dab-4bac-80cb-b56b8312a809',
-        '_ga': 'GA1.1.1712049269.1739547486',
-        '_ga_FLS6PM8998': 'GS1.1.1743600029.78.1.1743602138.0.0.0',
-        'SessionId': 'ad749b2e-01f4-45e2-ab72-5f1f10cfc5e5'
-    }
     try:
         response = requests.post(url, json=data, cookies=cookies)
         response.raise_for_status()
@@ -241,6 +243,22 @@ def process_do_order():
         time.sleep(5)
 
 
+def keep_alive():
+    url = 'https://www.ub8.com/ajax/wallet/main-wallet-balance'
+    while True:
+        # 随机生成 1 - 20 分钟的时间（单位：秒）
+        random_minutes = random.randint(1, 20)
+        random_seconds = random_minutes * 60
+        print(f"将在 {random_minutes} 分钟后发送下一次请求...")
+        time.sleep(random_seconds)
+        try:
+            response = requests.get(url, cookies=cookies)
+            # 打印响应状态码和内容
+            logging.info(f"请求保活内容: {response.text}")
+        except requests.RequestException as e:
+            logging.error(f"请求保活错误: {e}")
+
+
 if __name__ == "__main__":
     # 配置日志系统
     logging.basicConfig(
@@ -255,8 +273,10 @@ if __name__ == "__main__":
     thread1 = threading.Thread(target=process_un_orders)
     thread2 = threading.Thread(target=process_un_finish)
     thread3 = threading.Thread(target=process_do_order)
+    thread4 = threading.Thread(target=keep_alive)
     thread1.start()
     thread2.start()
     thread3.start()
+    thread4.start()
 
 
