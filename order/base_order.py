@@ -249,7 +249,7 @@ def keep_alive():
         # 随机生成 1 - 20 分钟的时间（单位：秒）
         random_minutes = random.randint(1, 20)
         random_seconds = random_minutes * 60
-        print(f"将在 {random_minutes} 分钟后发送下一次请求...")
+        logging.info(f"将在 {random_minutes} 分钟后发送下一次请求...")
         time.sleep(random_seconds)
         try:
             response = requests.get(url, cookies=cookies)
