@@ -202,7 +202,7 @@ def process_un_finish():
                         value = 'SMALL'
                     else:
                         value = 'DRAW'
-                if draw_pick == 'EVEN' or draw_pick == 'ODD':
+                elif draw_pick == 'EVEN' or draw_pick == 'ODD':
                     if is_D(int(value)):
                         value = 'EVEN'
                     elif is_O(int(value)):
