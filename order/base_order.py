@@ -372,9 +372,8 @@ def keep_alive():
     url = 'https://www.ub8.com/ajax/wallet/main-wallet-balance'
     while True:
         # 随机生成 1 - 20 分钟的时间（单位：秒）
-        random_minutes = random.randint(1, 20)
-        random_seconds = random_minutes * 60
-        logging.info(f"将在 {random_minutes} 分钟后发送下一次请求...")
+        random_seconds = random.randint(1*60, 20*60)
+        logging.info(f"将在 {random_seconds} s后发送下一次请求...")
         time.sleep(random_seconds)
         try:
             response = requests.get(url, cookies=cookies)
