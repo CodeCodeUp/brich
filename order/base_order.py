@@ -8,7 +8,7 @@ import threading
 import logging
 
 
-fib_sequence = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+fib_sequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
 # Cookie 信息
 cookies = {
     'visitor_id': '7b442bf9-521b-480a-add9-51ce269201cb',
@@ -97,8 +97,8 @@ def execute_api_request(data):
     url = 'https://www.ub8.com/ajax/board-game/order'
 
     try:
-        # response = requests.post(url, json=data, cookies=cookies)
-        # response.raise_for_status()
+        response = requests.post(url, json=data, cookies=cookies)
+        response.raise_for_status()
         return True
     except requests.RequestException as e:
         logging.error(f"请求接口时出错: {e}")
