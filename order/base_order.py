@@ -11,10 +11,10 @@ import logging
 fib_sequence = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
 # Cookie 信息
 cookies = {
-    'visitor_id': '1ac06ae0-7dab-4bac-80cb-b56b8312a809',
+    'visitor_id': '7b442bf9-521b-480a-add9-51ce269201cb',
     '_ga': 'GA1.1.1712049269.1739547486',
     '_ga_FLS6PM8998': 'GS1.1.1743697081.83.1.1743697103.0.0.0',
-    'SessionId': 'de29c1a4-a8d8-49cb-a31a-f53be744a9fa'
+    'SessionId': 'b9450920-5bbf-43fa-8d32-84db0e76d75e'
 }
 
 
@@ -279,20 +279,16 @@ def process_un_finish():
         time.sleep(5)
 
 
-def process_do_order():
+def process_do_order(data_type, limit, order, pick, stake_num=5):
     while True:
-        df = get_base_data(6, 8)
+        df = get_base_data(data_type, limit)
         if df.empty:
             time.sleep(20)
             continue
         data = df['number_four'].tolist()
         # 如果全部is_SB_B或is_SB_S且没有正在进行的,插入auto_order数据，pick相反
-        if all(is_SB_B(int(num)) for num in data):
-            pick = 'SMALL'
-            logging.info(f"当前数据全部为大: {data}")
-        elif all(is_SB_S(int(num)) for num in data):
-            pick = 'BIG'
-            logging.info(f"当前数据全部为小: {data}")
+        if all(order(int(num)) for num in data):
+            logging.info(f"当前数据全部为{pick}: {data}")
         else:
             time.sleep(20)
             continue
@@ -307,7 +303,7 @@ def process_do_order():
         number = df['nid'].tolist()[0]
         num = str(int(number[8:]) + 1).zfill(4)
         draw_number = f"{number[:8]}-{num}"
-        stake = 5
+        stake = stake_num
         base = 0
         dice_multiplier = 1
         draw_total = 2000
@@ -333,18 +329,18 @@ def process_do_order_two():
         # 后一个
         data_1 = data[-1]
         # 如果前七个和最后一个不同且没有正在进行的,插入auto_order数据，pick相反
-        if all(is_SB_B(int(num)) for num in data_before) and not is_SB_B(int(data_1)):
-            pick = 'SMALL'
-            logging.info(f"当前数据全部为大: {data}")
-        elif all(is_SB_S(int(num)) for num in data_before) and not is_SB_S(int(data_1)):
+        # if all(is_SB_B(int(num)) for num in data_before) and not is_SB_B(int(data_1)):
+        #     pick = 'SMALL'
+        #     logging.info(f"当前数据全部为大: {data}")
+        if all(is_SB_S(int(num)) for num in data_before) and not is_SB_S(int(data_1)):
             pick = 'BIG'
             logging.info(f"当前数据全部为小: {data}")
-        elif all(is_D(int(num)) for num in data_before) and not is_D(int(data_1)):
-            pick = 'ODD'
-            logging.info(f"当前数据全部为偶: {data}")
-        elif all(is_O(int(num)) for num in data_before) and not is_O(int(data_1)):
-            pick = 'EVEN'
-            logging.info(f"当前数据全部为奇: {data}")
+        # elif all(is_D(int(num)) for num in data_before) and not is_D(int(data_1)):
+        #     pick = 'ODD'
+        #     logging.info(f"当前数据全部为偶: {data}")
+        # elif all(is_O(int(num)) for num in data_before) and not is_O(int(data_1)):
+        #     pick = 'EVEN'
+        #     logging.info(f"当前数据全部为奇: {data}")
         else:
             time.sleep(20)
             continue
@@ -396,13 +392,20 @@ if __name__ == "__main__":
     # 异步执行两个函数
     thread1 = threading.Thread(target=process_un_orders)
     thread2 = threading.Thread(target=process_un_finish)
-    thread3 = threading.Thread(target=process_do_order)
     thread4 = threading.Thread(target=keep_alive)
-    thread5 = threading.Thread(target=process_do_order_two)
     thread1.start()
     thread2.start()
-    thread3.start()
     thread4.start()
-    thread5.start()
+    # thread5 = threading.Thread(target=process_do_order_two)
+    # thread5.start()
+    thread3 = threading.Thread(target=process_do_order, args=(6, 8, is_SB_B, 'SMALL', 5))
+    thread3.start()
+    thread6 = threading.Thread(target=process_do_order, args=(6, 8, is_SB_S, 'BIG', 5))
+    thread6.start()
+    thread7 = threading.Thread(target=process_do_order, args=(6, 10, is_D, 'ODD', 10))
+    thread7.start()
+    thread8 = threading.Thread(target=process_do_order, args=(6, 10, is_O, 'EVEN', 10))
+    thread8.start()
+
 
 
