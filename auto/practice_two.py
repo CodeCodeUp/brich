@@ -15,7 +15,7 @@ def is_S(num):
         return False
 
 
-def is_D(num):
+def is_E(num):
     if num == -1:
         return False
     else:
@@ -36,32 +36,36 @@ def is_O(num):
 
 
 def Solution_times_B(base_data):
-    total_integral = 2000      # 初始总积分
+    begin_bet = 10
+    total_integral = 1000      # 初始总积分
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
-    initial_bet = 10             #
+    initial_bet = begin_bet             #
     begin = 7
 
     for num_str in base_data:
         num = int(num_str)
-        current_streak = current_streak + 1 if is_S(num) else 0
+
         if not in_betting_group:
+            current_streak = current_streak + 1 if is_S(num) else 0
             if current_streak >= begin:
                 in_betting_group = True
         else:
+            current_streak = current_streak + 1 if not is_B(num) else 0
             # 扣除积分并更新当前下注组的总下注金额
             total_integral -= initial_bet
 
-            if is_O(num):
+            if is_B(num):
                 total_integral += initial_bet * 2
                 in_betting_group = False
                 current_streak = 0
-                initial_bet = 10
+                initial_bet = begin_bet
+                continue
             else:
                 initial_bet *= 2
         if current_streak >= 10:
             current_streak = 0
-            initial_bet = 10
+            initial_bet = begin_bet
             in_betting_group = False
             continue
     return [round(total_integral, 1)]

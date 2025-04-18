@@ -37,15 +37,15 @@ def is_O(num):
 
 def Solution_times_B(base_data):
     actual_bet_list = [0]
-    total_integral = 2000      # 初始总积分
-    fib_sequence = [1, 1]       # 斐波那契数列初始化
+    total_integral = 1000      # 初始总积分
+    fib_sequence = [1, 2]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
     initial_bet = 5             #
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 7
+    begin = 8
 
     for num_str in base_data:
         num = int(num_str)
@@ -91,7 +91,7 @@ def Solution_times_B(base_data):
 
 def Solution_times_S(base_data):
     actual_bet_list = [0]
-    total_integral = 2000      # 初始总积分
+    total_integral = 1000      # 初始总积分
     fib_sequence = [1, 1]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
@@ -99,15 +99,14 @@ def Solution_times_S(base_data):
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 7
+    begin = 8
     for num_str in base_data:
         num = int(num_str)
         if current_streak >= begin:
             current_streak = current_streak + 1 if not is_S(num) else 0
         else:
             current_streak = current_streak + 1 if is_B(num) else 0
-        if current_streak >= 10:
-            continue
+
         if not in_betting_group:
 
             if current_streak >= begin:
@@ -144,7 +143,7 @@ def Solution_times_S(base_data):
 
 def Solution_times_D(base_data):
     actual_bet_list = [0]
-    total_integral = 2000      # 初始总积分
+    total_integral = 1000      # 初始总积分
     fib_sequence = [1, 1]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
@@ -152,7 +151,7 @@ def Solution_times_D(base_data):
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 7
+    begin = 8
 
     for num_str in base_data:
         num = int(num_str)
@@ -160,8 +159,7 @@ def Solution_times_D(base_data):
             current_streak = current_streak + 1 if not is_D(num) else 0
         else:
             current_streak = current_streak + 1 if is_O(num) else 0
-        if current_streak >= 12:
-            continue
+
         if not in_betting_group:
 
             if current_streak >= begin:
@@ -198,7 +196,7 @@ def Solution_times_D(base_data):
 
 def Solution_times_O(base_data):
     actual_bet_list = [0]
-    total_integral = 2000      # 初始总积分
+    total_integral = 1000      # 初始总积分
     fib_sequence = [1, 1]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
@@ -206,7 +204,7 @@ def Solution_times_O(base_data):
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 7
+    begin = 8
 
     for num_str in base_data:
         num = int(num_str)
