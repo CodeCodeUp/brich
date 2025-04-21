@@ -130,7 +130,7 @@ def main():
     st.title("Spring Ai")
 
     with st.sidebar:
-        data_type = st.selectbox("选择数据类型", [1, 2, 3, 4, 5, 6, 7], index=1)
+        data_type = st.selectbox("选择数据类型", [1, 2, 3, 4, 5, 6, 7], index=5)
         start_time = st.date_input(
             label="📅 开始时间",
             value=default_start,  # 设置默认值
@@ -138,8 +138,8 @@ def main():
             max_value=datetime.date.today(),  # 可选最晚日期（不能选未来）
             key="start_date"  # 唯一标识符
         )
-        # 自动计算最小可选结束时间（开始时间次日）
-        min_end_date = start_time + timedelta(days=1)
+        # 自动计算最小可选结束时间（开始时间次日）+ timedelta(days=1)
+        min_end_date = start_time
         end_time = st.date_input(
             label="📅 结束时间",
             value=default_end,  # 默认设置为明天
@@ -154,7 +154,7 @@ def main():
         draw_type = st.text_input("drawType", "F1TB")
         num = str(int(number[8:]) + 1).zfill(4)
         draw_number = st.text_input("drawNumber", f"{number[:8]}-{num}")
-        stake = st.text_input("stake", 5)
+        stake = st.text_input("stake", 2)
         index = 0 if is_S(int(order_data['number_four'].tolist()[0])) else 1
         pick = st.selectbox("pick", ['BIG', 'SMALL', 'EVEN', 'ODD'], index=index)
         base = st.text_input("base", 0)
