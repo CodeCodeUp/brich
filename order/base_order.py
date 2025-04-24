@@ -11,10 +11,10 @@ import logging
 fib_sequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
 # Cookie 信息
 cookies = {
-    'visitor_id': '7b442bf9-521b-480a-add9-51ce269201cb',
-    '_ga': 'GA1.1.1712049269.1739547486',
-    '_ga_FLS6PM8998': 'GS1.1.1743697081.83.1.1743697103.0.0.0',
-    'SessionId': 'b9450920-5bbf-43fa-8d32-84db0e76d75e'
+    'visitor_id': '83bd163c-e1ed-4623-a3ae-66e7858b860d',
+    '_ga': 'GA1.1.571452156.1745314369',
+    '_ga_FLS6PM8998': 'GS1.1.1745401141.2.1.1745401470.0.0.0',
+    'SessionId': '6e218735-5c6d-4bf5-aa72-48dd1f3616e7'
 }
 
 
@@ -94,7 +94,7 @@ def get_base_data(data_type, limit):
 
 
 def execute_api_request(data):
-    url = 'https://www.ub8.com/ajax/board-game/order'
+    url = 'https://www.goub88.com/ajax/board-game/order'
 
     try:
         response = requests.post(url, json=data, cookies=cookies)
@@ -259,11 +259,11 @@ def process_un_finish():
                     """)
                     conn.execute(update_query, {"id": row['id'], "total": draw_total})
                 if strategy_type == 1:
-                    if int(draw_total) >= (2000 + int(row["stake"]) * 3):
+                    if int(draw_total) >= (2000 + int(row["stake"]) * 3) or int(draw_total) < 0:
                         logging.info("类型1，完成此次下单")
                         continue
                 if strategy_type == 2:
-                    if int(draw_total) >= (2000 + int(row["stake"])) or int(draw_base) > 4:
+                    if int(draw_total) >= (2000 + int(row["stake"])) or int(draw_base) > 4 or int(draw_total) < 0:
                         logging.info("类型2，完成此次下单")
                         continue
                 num = str(int(draw_number[8:]) + 1).zfill(4)
@@ -328,11 +328,14 @@ def process_do_order_two():
         data_before = data[:before]
         # 后一个
         data_1 = data[-1]
+        stake = 10
         # 如果前七个和最后一个不同且没有正在进行的,插入auto_order数据，pick相反
         # if all(is_SB_B(int(num)) for num in data_before) and not is_SB_B(int(data_1)):
+        #     stake = 5
         #     pick = 'SMALL'
         #     logging.info(f"当前数据全部为大: {data}")
         if all(is_SB_S(int(num)) for num in data_before) and not is_SB_S(int(data_1)):
+            stake = 10
             pick = 'BIG'
             logging.info(f"当前数据全部为小: {data}")
         # elif all(is_D(int(num)) for num in data_before) and not is_D(int(data_1)):
@@ -355,7 +358,6 @@ def process_do_order_two():
         number = df['nid'].tolist()[0]
         num = str(int(number[8:]) + 1).zfill(4)
         draw_number = f"{number[:8]}-{num}"
-        stake = 10
         base = 1
         dice_multiplier = 1
         draw_total = 2000
@@ -365,18 +367,18 @@ def process_do_order_two():
 
 
 def keep_alive():
-    url = 'https://www.ub8.com/ajax/wallet/main-wallet-balance'
+    url = 'https://www.goub88.com/ajax/wallet/main-wallet-balance'
     while True:
         # 随机生成 1 - 20 分钟的时间（单位：秒）
-        random_seconds = random.randint(1*60, 20*60)
-        logging.info(f"将在 {random_seconds} s后发送下一次请求...")
-        time.sleep(random_seconds)
         try:
             response = requests.get(url, cookies=cookies)
             # 打印响应状态码和内容
             logging.info(f"请求保活内容: {response.text}")
         except requests.RequestException as e:
             logging.error(f"请求保活错误: {e}")
+        random_seconds = random.randint(1 * 60, 20 * 60)
+        logging.info(f"将在 {random_seconds} s后发送下一次请求...")
+        time.sleep(random_seconds)
 
 
 if __name__ == "__main__":
@@ -396,15 +398,15 @@ if __name__ == "__main__":
     thread1.start()
     thread2.start()
     thread4.start()
-    # thread5 = threading.Thread(target=process_do_order_two)
-    # thread5.start()
-    thread3 = threading.Thread(target=process_do_order, args=(6, 8, is_SB_B, 'SMALL', 5))
+    thread5 = threading.Thread(target=process_do_order_two)
+    thread5.start()
+    thread3 = threading.Thread(target=process_do_order, args=(6, 9, is_SB_B, 'SMALL', 4))
     thread3.start()
-    thread6 = threading.Thread(target=process_do_order, args=(6, 8, is_SB_S, 'BIG', 5))
+    thread6 = threading.Thread(target=process_do_order, args=(6, 9, is_SB_S, 'BIG', 4))
     thread6.start()
-    thread7 = threading.Thread(target=process_do_order, args=(6, 10, is_D, 'ODD', 10))
+    thread7 = threading.Thread(target=process_do_order, args=(6, 10, is_D, 'ODD', 5))
     thread7.start()
-    thread8 = threading.Thread(target=process_do_order, args=(6, 10, is_O, 'EVEN', 10))
+    thread8 = threading.Thread(target=process_do_order, args=(6, 10, is_O, 'EVEN', 5))
     thread8.start()
 
 
