@@ -41,11 +41,11 @@ def Solution_times_B(base_data):
     fib_sequence = [1, 1]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
-    initial_bet = 2             #
+    initial_bet = 3             #
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 7
+    begin = 6
 
     for num_str in base_data:
         num = int(num_str)
@@ -93,7 +93,7 @@ def Solution_times_S(base_data):
     fib_sequence = [1, 1]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
-    initial_bet = 2             #
+    initial_bet = 3             #
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
@@ -145,11 +145,11 @@ def Solution_times_D(base_data):
     fib_sequence = [1, 1]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
-    initial_bet = 5             #
+    initial_bet = 3             #
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 8
+    begin = 7
 
     for num_str in base_data:
         num = int(num_str)
@@ -198,11 +198,11 @@ def Solution_times_O(base_data):
     fib_sequence = [1, 2]       # 斐波那契数列初始化
     current_streak = 0           # 连续「大」的次数
     in_betting_group = False     # 是否在下注组中
-    initial_bet = 2             #
+    initial_bet = 3            #
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 8
+    begin = 7
 
     for num_str in base_data:
         num = int(num_str)
@@ -256,11 +256,12 @@ for col in ['number_four']:
     print(f"Solution_times_D-{col}最后的数量为: {final_integral_times_D}")
     print(f"Solution_times_O-{col}最后的数量为: {final_integral_times_O}")
 
-#(6, 7, is_SB_S, 'BIG', 2)) TRUE
-#(6, 7, is_SB_B, 'SMALL', 2)) TRUE
-#(6, 7, is_O, 'EVEN', 2)) TRUE
-#(6, 7, is_D, 'ODD', 2)) FALSE
-#(6, 8, is_SB_S, 'BIG', 2)) TRUE
-#(6, 8, is_SB_B, 'SMALL', 2)) TRUE
-#(6, 8, is_O, 'EVEN', 2)) TRUE
-#(6, 8, is_D, 'ODD', 2)) TRUE
+#(6, 7, is_SB_S, 'BIG', 3)) TRUE
+#(6, 7, is_SB_B, 'SMALL', 3)) TRUE
+#(6, 7, is_O, 'EVEN', 3)) TRUE
+#(6, 7, is_D, 'ODD', 2))  [2025-03-23,2025-03-24,FALSE]
+
+#(6, 8, is_SB_S, 'BIG', 3)) TRUE
+#(6, 8, is_SB_B, 'SMALL', 3)) TRUE
+#(6, 8, is_O, 'EVEN', 3)) TRUE
+#(6, 8, is_D, 'ODD', 3)) TRUE
