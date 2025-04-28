@@ -322,7 +322,7 @@ def process_do_order(data_type, limit, order, pick, stake_num=5):
         time.sleep(30)
 
 
-def process_do_order_two():
+def process_do_order_two(order1, order2, order3, order4):
     while True:
         length = 8
         df = get_base_data(6, length)
@@ -339,20 +339,21 @@ def process_do_order_two():
         data_before = data[:before]
         # 后一个
         data_1 = data[-1]
-        stake = 10
         # 如果前七个和最后一个不同且没有正在进行的,插入auto_order数据，pick相反
         # if all(is_SB_B(int(num)) for num in data_before) and not is_SB_B(int(data_1)):
-        #     stake = 5
+        #     stake = order1
         #     pick = 'SMALL'
         #     logging.info(f"当前数据全部为大: {data}")
         if all(is_SB_S(int(num)) for num in data_before) and not is_SB_S(int(data_1)):
-            stake = 10
+            stake = order2
             pick = 'BIG'
             logging.info(f"当前数据全部为小: {data}")
         # elif all(is_D(int(num)) for num in data_before) and not is_D(int(data_1)):
+        #     stake = order3
         #     pick = 'ODD'
         #     logging.info(f"当前数据全部为偶: {data}")
         # elif all(is_O(int(num)) for num in data_before) and not is_O(int(data_1)):
+        #     stake = order4
         #     pick = 'EVEN'
         #     logging.info(f"当前数据全部为奇: {data}")
         else:
@@ -409,15 +410,15 @@ if __name__ == "__main__":
     thread1.start()
     thread2.start()
     thread4.start()
-    thread5 = threading.Thread(target=process_do_order_two)
-    thread5.start()
-    thread3 = threading.Thread(target=process_do_order, args=(6, 9, is_SB_B, 'SMALL', 4))
-    thread3.start()
-    thread6 = threading.Thread(target=process_do_order, args=(6, 9, is_SB_S, 'BIG', 4))
+    thread5 = threading.Thread(target=process_do_order_two, args=(1, 10, 1, 1))
+    thread3 = threading.Thread(target=process_do_order, args=(6, 8, is_SB_B, 'SMALL', 3))
+    thread6 = threading.Thread(target=process_do_order, args=(6, 8, is_SB_S, 'BIG', 3))
+    thread7 = threading.Thread(target=process_do_order, args=(6, 9, is_D, 'ODD', 6))
+    thread8 = threading.Thread(target=process_do_order, args=(6, 9, is_O, 'EVEN', 6))
     thread6.start()
-    thread7 = threading.Thread(target=process_do_order, args=(6, 10, is_D, 'ODD', 5))
     thread7.start()
-    thread8 = threading.Thread(target=process_do_order, args=(6, 10, is_O, 'EVEN', 5))
+    thread3.start()
+    thread5.start()
     thread8.start()
 
 
