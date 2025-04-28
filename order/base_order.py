@@ -9,6 +9,7 @@ import logging
 
 
 fib_sequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
 # Cookie 信息
 cookies = {
     'visitor_id': '83bd163c-e1ed-4623-a3ae-66e7858b860d',
@@ -53,7 +54,6 @@ def is_O(num):
 
 
 def is_order_now(draw_type, pick, strategy_type):
-    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     query = ("SELECT count(1) FROM auto_order WHERE  drawType = %s AND pick = %s AND type = %s AND"
              "(nextOrder = 0 OR isFinish = 0)")
     df = pd.read_sql(query, engine, params=(draw_type, pick, strategy_type))
@@ -67,7 +67,6 @@ def is_order_now(draw_type, pick, strategy_type):
 
 
 def get_request_id():
-    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     query = "SELECT requestId FROM auto_order WHERE id = (SELECT MAX(id) FROM auto_order)"
     df_request_id = pd.read_sql(query, engine)
     if df_request_id.empty:
@@ -78,7 +77,6 @@ def get_request_id():
 
 
 def get_base_data(data_type, limit):
-    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     query = """
         SELECT * 
         FROM base_data 
@@ -95,18 +93,34 @@ def get_base_data(data_type, limit):
 
 def execute_api_request(data):
     url = 'https://www.goub88.com/ajax/board-game/order'
+    retries = 3  # 最大重试次数
+    timeout = 5  # 请求超时设置为5秒
 
-    try:
-        response = requests.post(url, json=data, cookies=cookies)
-        response.raise_for_status()
-        return True
-    except requests.RequestException as e:
-        logging.error(f"请求接口时出错: {e}")
-        return False
+    for attempt in range(1, retries + 1):
+        try:
+            # 发送 POST 请求，设置超时为5秒
+            response = requests.post(url, json=data, cookies=cookies, timeout=timeout)
+            # 检查响应是否成功
+            response.raise_for_status()
+            return True  # 请求成功，返回 True
+        except requests.Timeout:
+            logging.warning(f"请求超时，第 {attempt} 次重试")
+        except requests.RequestException as e:
+            logging.error(f"请求接口时出错: {e}")
+            return False  # 如果发生其他请求错误，直接返回 False
+
+        # 如果是最后一次尝试失败，抛出错误
+        if attempt == retries:
+            logging.error(f"请求失败，已重试 {retries} 次，无法获取响应。")
+            return False
+
+        # 等待一段时间再重试
+        time.sleep(1)
+
+    return False
 
 
 def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier, base, draw_total, strategy_type):
-    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     try:
         with engine.begin() as conn:
             # 使用 text 函数将 SQL 字符串包装成可执行对象
@@ -142,12 +156,10 @@ def insert_data(request_id, draw_type, draw_number, stake, pick, dice_multiplier
 
 
 def process_un_orders():
-    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     while True:
         try:
             query = "SELECT * FROM auto_order WHERE nextOrder = 0 AND isFinish = 0"
             df = pd.read_sql(query, engine)
-
             for _, row in df.iterrows():
                 total = row["total"]
                 strategy_type = row["type"]
@@ -194,11 +206,10 @@ def process_un_orders():
         except Exception as e:
             logging.error(f"process_un_orders: {e}")
 
-        time.sleep(5)
+        time.sleep(2)
 
 
 def process_un_finish():
-    engine = create_engine('mysql+pymysql://root:202358hjq@116.205.244.106:3306/brich')
     while True:
         try:
             query = "SELECT * FROM auto_order WHERE nextOrder = 1 AND isFinish = 0"
