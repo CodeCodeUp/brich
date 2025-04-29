@@ -9,7 +9,7 @@ def get_data():
     # SELECT * FROM base_data WHERE `type` = 2  and nid >= 202503230001 and nid<202503240001 and insert_time > '2025-02-17' order by id
     # 查询数据
     query = ("SELECT * FROM base_data WHERE `type` = 6  "
-             "and insert_time between '2025-03-01' and '2025-04-29'")
+             "and insert_time between '2025-04-25' and '2025-04-26'")
     df = pd.read_sql(query, engine)
 
     # 将number_one到number_five列转换为数值类型
