@@ -47,15 +47,15 @@ def Solution_times_B(base_data):
         num = int(num_str)
 
         if not in_betting_group:
-            current_streak = current_streak + 1 if is_B(num) else 0
+            current_streak = current_streak + 1 if is_S(num) else 0
             if current_streak >= begin:
                 in_betting_group = True
         else:
-            current_streak = current_streak + 1 if not is_S(num) else 0
+            current_streak = current_streak + 1 if not is_B(num) else 0
             # 扣除积分并更新当前下注组的总下注金额
             total_integral -= initial_bet
 
-            if is_S(num):
+            if is_B(num):
                 total_integral += initial_bet * 2
                 in_betting_group = False
                 current_streak = 0
