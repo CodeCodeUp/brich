@@ -47,7 +47,7 @@ def Solution_times_B(base_data):
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 8
+    begin = 6
 
     for num_str in base_data:
         num = int(num_str)
@@ -99,7 +99,7 @@ def Solution_times_S(base_data):
     profit_target = 0           #
     current_fib_index = 0        # 当前斐波那契索引（每次触发下注组时重置）
     trigger_integral = 0        # 触发下注组时的初始积分
-    begin = 8
+    begin = 6
     for num_str in base_data:
         num = int(num_str)
         if current_streak >= begin:
