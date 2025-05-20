@@ -19,6 +19,7 @@ DB_CONFIG = {
     'charset': 'utf8mb4'
 }
 
+
 # 获取需跟踪的股票及其起始时间
 def fetch_stock_list():
     conn = pymysql.connect(**DB_CONFIG)
@@ -27,6 +28,7 @@ def fetch_stock_list():
     df['stock_code'] = df['stock_code'].astype(str)
     df['begin_time'] = pd.to_datetime(df['begin_time'])
     return df
+
 
 def fetch_last_times(codes):
     conn = pymysql.connect(**DB_CONFIG)
@@ -43,6 +45,18 @@ def fetch_last_times(codes):
 
 # 插入行情数据，支持 DataFrame 或 dict 格式的 quote
 def insert_quote(code, quote):
+    for row in quote.itertuples(index=False):
+        current_time = pd.Timestamp(row[0])
+        # 如果时间是10点，添加一条记录，new_row[0]时间为9.30,new_row1-3为row的row[1],3-9其他为0
+        if current_time.hour == 10 and current_time.minute == 0:
+            # 创建新行，时间是 9:30
+            new_time = current_time.replace(hour=9, minute=30)
+            # 构建新行的数据
+            new_row = [new_time]  # 时间为 9:30
+            new_row += [row[1]] * 4  # 添加4个相同的值（来自 row[1]）
+            new_row += [0] * 6  # 其余6列为 0
+
+            quote.loc[len(quote)] = new_row  # 添加新行到 DataFrame
     conn = pymysql.connect(**DB_CONFIG)
     cur = conn.cursor()
     sql = ("INSERT INTO stock_price_tracking "
@@ -54,21 +68,17 @@ def insert_quote(code, quote):
            "high_price=VALUES(high_price), low_price=VALUES(low_price), "
            "volume=VALUES(volume), amount=VALUES(amount), change_rate=VALUES(change_rate)")
     for row in quote.itertuples(index=False):
-        # 只保留时间是30分或者整点的记录
-        current_time = pd.Timestamp(row[0])  # 或者直接使用 row[0]，取决于数据类型
-        if current_time.minute not in [0, 30]:
-            continue
         try:
             cur.execute(sql, (
                 code,
                 row[0],
-                row[7],
-                row[1],
                 row[2],
+                row[1],
                 row[3],
                 row[4],
-                row[5],
-                None if row[7] == 0 else (row[4] - row[7]) / row[7] * 100
+                row[7],
+                row[8],
+                row[5]
             ))
         except Exception as e:
             logging.error(f"{code} 插入数据异常: {e}")
@@ -80,7 +90,7 @@ def insert_quote(code, quote):
 def get_price(code, begin):
     quote = None
     try:
-        quote = ak.stock_zh_a_hist_min_em(symbol=code, period="1", adjust="qfq", start_date=begin)
+        quote = ak.stock_zh_a_hist_min_em(symbol=code, period="30", adjust="qfq", start_date=begin)
         if quote is None or len(quote) == 0:
             logging.error(f"{code} 获取数据失败")
             return

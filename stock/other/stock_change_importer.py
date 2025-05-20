@@ -176,17 +176,17 @@ def update_stock_base():
 
 # 主流程
 if __name__ == '__main__':
-    # session = create_session()
-    # max_pages = 12
-    # for page in range(1, max_pages + 1):
-    #     logging.info(f"Fetching page {page}...")
-    #     data_rows = fetch_page(session, page)
-    #     if not data_rows:
-    #         break
-    #     insert_rows(data_rows)
-    #     # 随机10-60秒的延迟
-    #     wait_time = random.randint(10, 60)
-    #     time.sleep(wait_time)
+    session = create_session()
+    max_pages = 12
+    for page in range(1, max_pages + 1):
+        logging.info(f"Fetching page {page}...")
+        data_rows = fetch_page(session, page)
+        if not data_rows:
+            break
+        insert_rows(data_rows)
+        # 随机10-60秒的延迟
+        wait_time = random.randint(10, 60)
+        time.sleep(wait_time)
     # 更新基础股票表
     update_stock_base()
     logging.info('stock_base update completed.')
