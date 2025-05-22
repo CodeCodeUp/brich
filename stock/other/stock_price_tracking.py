@@ -1,6 +1,5 @@
-import time
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
 import akshare as ak
 import pymysql
@@ -100,14 +99,16 @@ def get_price(code, begin):
 
 
 if __name__ == '__main__':
-    while True:
-        now = datetime.now().replace(second=0, microsecond=0)
-        stock_df = fetch_stock_list()
-        codes = stock_df['stock_code'].tolist()
-        last_times = fetch_last_times(codes)
-        for code, begin in stock_df.itertuples(index=False):
-            last = last_times.get(code)
-            if last is None:
-                last = begin
-            get_price(code, last)
-        time.sleep(1800)
+    logging.info("开始获取数据")
+    now = datetime.now().replace(second=0, microsecond=0)
+    stock_df = fetch_stock_list()
+    codes = stock_df['stock_code'].tolist()
+    last_times = fetch_last_times(codes)
+    for code, begin in stock_df.itertuples(index=False):
+        logging.info(f"开始获取 {code} 的数据")
+        last = last_times.get(code)
+        if last is None:
+            last = begin
+        get_price(code, last)
+        logging.info(f"{code} 数据获取完成")
+    logging.info("数据获取完成")
