@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 import pandas as pd
 import akshare as ak
-import pymysql
+from sqlalchemy import create_engine, text  # 新增导入
 
 # 日志配置
 logging.basicConfig(level=logging.INFO,
@@ -19,43 +19,53 @@ DB_CONFIG = {
 }
 
 
-# 获取需跟踪的股票及其起始时间
+# 创建SQLAlchemy引擎
+def get_db_engine():
+    connection_string = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}?charset={DB_CONFIG['charset']}"
+    return create_engine(connection_string)
+
+
+# 获取需跟踪的股票及其起始时间（修改SQL部分）
 def fetch_stock_list():
-    conn = pymysql.connect(**DB_CONFIG)
-    df = pd.read_sql("SELECT stock_code, begin_time FROM stock_base", conn)
-    conn.close()
+    engine = get_db_engine()
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT stock_code, begin_time FROM stock_base"))
+        df = pd.DataFrame(result.fetchall(), columns=['stock_code', 'begin_time'])
     df['stock_code'] = df['stock_code'].astype(str)
     df['begin_time'] = pd.to_datetime(df['begin_time'])
     return df
 
 
+# 获取每只股票的最后跟踪时间（修改SQL部分）
 def fetch_last_times(codes):
-    conn = pymysql.connect(**DB_CONFIG)
-    sql = ("SELECT stock_code, MAX(track_time) AS last_time "
-           "FROM stock_price_tracking "
-           "WHERE stock_code IN ({}) "
-           "GROUP BY stock_code").format(','.join(['%s']*len(codes)))
-    cur = conn.cursor()
-    cur.execute(sql, codes)
-    rows = cur.fetchall()
-    conn.close()
+    engine = get_db_engine()
+    placeholders = ', '.join([':code_' + str(i) for i in range(len(codes))])
+    params = {'code_' + str(i): code for i, code in enumerate(codes)}
+
+    with engine.connect() as conn:
+        query = text(f"""
+            SELECT stock_code, MAX(track_time) AS last_time 
+            FROM stock_price_tracking 
+            WHERE stock_code IN ({placeholders}) 
+            GROUP BY stock_code
+        """)
+        result = conn.execute(query, params)
+        rows = result.fetchall()
+
     return {r[0]: r[1] for r in rows}
 
 
-# 插入行情数据，支持 DataFrame 或 dict 格式的 quote
+# 插入行情数据（保持原逻辑不变）
 def insert_quote(code, quote):
     for row in quote.itertuples(index=False):
         current_time = pd.Timestamp(row[0])
-        # 如果时间是10点，添加一条记录，new_row[0]时间为9.30,new_row1-3为row的row[1],3-9其他为0
         if current_time.hour == 10 and current_time.minute == 0:
-            # 创建新行，时间是 9:30
             new_time = current_time.replace(hour=9, minute=30)
-            # 构建新行的数据
-            new_row = [new_time]  # 时间为 9:30
-            new_row += [row[1]] * 4  # 添加4个相同的值（来自 row[1]）
-            new_row += [0] * 6  # 其余6列为 0
+            new_row = [new_time]
+            new_row += [row[1]] * 4
+            new_row += [0] * 6
+            quote.loc[len(quote)] = new_row
 
-            quote.loc[len(quote)] = new_row  # 添加新行到 DataFrame
     conn = pymysql.connect(**DB_CONFIG)
     cur = conn.cursor()
     sql = ("INSERT INTO stock_price_tracking "
@@ -86,6 +96,7 @@ def insert_quote(code, quote):
     cur.close()
 
 
+# 获取股票价格数据（保持原逻辑不变）
 def get_price(code, begin):
     quote = None
     try:
@@ -98,6 +109,7 @@ def get_price(code, begin):
         logging.error(f"{code} 获取数据异常: {e}, 数据: {quote}")
 
 
+# 主程序（保持原逻辑不变）
 if __name__ == '__main__':
     logging.info("开始获取数据")
     now = datetime.now().replace(second=0, microsecond=0)
