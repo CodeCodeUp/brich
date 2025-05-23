@@ -66,34 +66,33 @@ def insert_quote(code, quote):
             new_row += [0] * 6
             quote.loc[len(quote)] = new_row
 
-    conn = pymysql.connect(**DB_CONFIG)
-    cur = conn.cursor()
-    sql = ("INSERT INTO stock_price_tracking "
+    engine = get_db_engine()
+    with engine.connect() as conn:
+        sql = text(f"""INSERT INTO stock_price_tracking "
            "(stock_code, track_time, current_price, open_price, high_price, low_price, "
            "volume, amount, change_rate) "
            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) "
            "ON DUPLICATE KEY UPDATE "
            "current_price=VALUES(current_price), open_price=VALUES(open_price), "
            "high_price=VALUES(high_price), low_price=VALUES(low_price), "
-           "volume=VALUES(volume), amount=VALUES(amount), change_rate=VALUES(change_rate)")
-    for row in quote.itertuples(index=False):
-        try:
-            cur.execute(sql, (
-                code,
-                row[0],
-                row[2],
-                row[1],
-                row[3],
-                row[4],
-                row[7],
-                row[8],
-                row[5]
-            ))
-        except Exception as e:
-            logging.error(f"{code} 插入数据异常: {e}")
-        finally:
-            conn.commit()
-    cur.close()
+           "volume=VALUES(volume), amount=VALUES(amount), change_rate=VALUES(change_rate)""")
+        for row in quote.itertuples(index=False):
+            try:
+                conn.execute(sql, (
+                    code,
+                    row[0],
+                    row[2],
+                    row[1],
+                    row[3],
+                    row[4],
+                    row[7],
+                    row[8],
+                    row[5]
+                ))
+            except Exception as e:
+                logging.error(f"{code} 插入数据异常: {e}")
+            finally:
+                conn.commit()
 
 
 # 获取股票价格数据（保持原逻辑不变）
